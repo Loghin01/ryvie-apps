@@ -19,7 +19,7 @@ command -v yq >/dev/null 2>&1 || { echo "❌ yq is not installed. Exiting."; exi
 # ------------------------------
 APPS_DIR="apps"
 OUTPUT_FILE="apps.json"
-GITHUB_REPO="ryvie/ryvie-apps"
+GITHUB_REPO="Loghin01/ryvie-apps-gallery"
 BRANCH="main"
 
 echo "🧩 Generating ${OUTPUT_FILE} from ${APPS_DIR}/*/ryvie-apps.yml..."
