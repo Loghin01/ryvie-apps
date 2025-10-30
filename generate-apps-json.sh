@@ -55,7 +55,7 @@ fi
 # Verify gallery images exist
 missing_icon=false
 for image in $(yq -o=json '.gallery[]' "$app_file" | jq -r '.'); do
-  url="https://cdn.jsdelivr.net/gh/$GITHUB_REPO@$BRANCH/apps/$app_dir/$image"
+  url="https://cdn.jsdelivr.net/gh/$GITHUB_REPO@$BRANCH/$app_dir/$image"
   if ! curl --head --silent --fail "$url" >/dev/null; then
     if [ "$image" = "icon.png" ]; then
       echo "⚠️ Missing icon.png for $app_dir — skipping app"
