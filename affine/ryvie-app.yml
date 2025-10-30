@@ -27,10 +27,9 @@ description: >-
 
 gallery:
   - icon.png
-  - image1.jpg
-  - image2.jpg
-  - image3.jpg
-
+  - image1.png
+  - image2.png
+  - image3.png
 architectures:
   - amd64
   - arm64
