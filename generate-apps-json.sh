@@ -37,7 +37,7 @@ for app_file in */ryvie-app.yml; do
   echo "🔹 Processing app: $app_dir"
 
   # Skip app if no gallery
-  if ! yq -e '.galery' "$app_file" >/dev/null 2>&1; then
+  if ! yq -e '.gallery' "$app_file" >/dev/null 2>&1; then
     echo "⚠️ No gallery found in $app_file — skipping $app_dir"
     continue
   fi
