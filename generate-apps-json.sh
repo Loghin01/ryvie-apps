@@ -49,7 +49,7 @@ for app_file in */ryvie-app.yml; do
   fi
 
   # Add gallery URLs dynamically
-  gallery_json=$(yq -o=json '.galery' "$app_file" | jq -r --arg repo "$GITHUB_REPO" --arg branch "$BRANCH" --arg app "$app_dir" '
+  gallery_json=$(yq -o=json '.gallery' "$app_file" | jq -r --arg repo "$GITHUB_REPO" --arg branch "$BRANCH" --arg app "$app_dir" '
     map("https://cdn.jsdelivr.net/gh/\($repo)@\($branch)/\($app)/" + .)
   ')
 
