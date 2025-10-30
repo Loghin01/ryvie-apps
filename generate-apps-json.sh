@@ -22,13 +22,13 @@ OUTPUT_FILE="apps.json"
 GITHUB_REPO="Loghin01/ryvie-apps-gallery"
 BRANCH="main"
  
-echo "🧩 Generating ${OUTPUT_FILE} from ${APPS_DIR}/*/ryvie-apps.yml..."
+echo "🧩 Generating ${OUTPUT_FILE} from ${APPS_DIR}/*/ryvie-app.yml..."
 
 # Initialize empty JSON array
 echo "[]" > "$OUTPUT_FILE"
 
 # Loop over all t-apps.yml files
-for app_file in ${APPS_DIR}/*/ryvie-apps.yml; do
+for app_file in ${APPS_DIR}/*/ryvie-app.yml; do
   if [ -f "$app_file" ]; then
     app_dir=$(basename "$(dirname "$app_file")")
 
