@@ -36,11 +36,40 @@ for app_file in */ryvie-app.yml; do
   app_dir=$(basename "$(dirname "$app_file")")
   echo "🔹 Processing app: $app_dir"
 
-  # Skip app if no gallery
-  if ! yq -e '.gallery' "$app_file" >/dev/null 2>&1; then
-    echo "⚠️ No gallery found in $app_file — skipping $app_dir"
-    continue
+# Check required fields
+required_fields=(manifestVersion id category name port gallery)
+missing=false
+
+for field in "${required_fields[@]}"; do
+  if ! yq -e ".${field}" "$app_file" >/dev/null 2>&1; then
+    echo "⚠️ Missing required field '$field' in $app_file"
+    missing=true
   fi
+done
+
+if [ "$missing" = true ]; then
+  echo "⚠️ Skipping $app_dir due to missing required fields"
+  continue
+fi
+
+# Verify gallery images exist
+missing_icon=false
+for image in $(yq -o=json '.gallery[]' "$app_file" | jq -r '.'); do
+  url="https://cdn.jsdelivr.net/gh/$GITHUB_REPO@$BRANCH/apps/$app_dir/$image"
+  if ! curl --head --silent --fail "$url" >/dev/null; then
+    if [ "$image" = "icon.png" ]; then
+      echo "⚠️ Missing icon.png for $app_dir — skipping app"
+      missing_icon=true
+      break
+    else
+      echo "⚠️ Missing gallery image: $url"
+    fi
+  fi
+done
+
+if [ "$missing_icon" = true ]; then
+  continue
+fi
 
   # Extract YAML content as JSON
   if ! app_json=$(yq -o=json '.' "$app_file"); then
