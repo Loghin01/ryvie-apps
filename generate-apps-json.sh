@@ -7,6 +7,33 @@
 
 set -e
 
+# ------------------------------
+# Check dependencies: jq & yq
+# ------------------------------
+command -v jq >/dev/null 2>&1 || {
+  echo "❌ jq is not installed. Installing..."
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    sudo apt update && sudo apt install -y jq
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install jq
+  else
+    echo "⚠️ Unsupported OS. Please install jq manually."
+    exit 1
+  fi
+}
+
+command -v yq >/dev/null 2>&1 || {
+  echo "❌ yq is not installed. Installing..."
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    sudo apt update && sudo apt install -y yq
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install yq
+  else
+    echo "⚠️ Unsupported OS. Please install yq manually."
+    exit 1
+  fi
+}
+
 APPS_DIR="apps"
 OUTPUT_FILE="apps.json"
 GITHUB_REPO="ryvie/ryvie-apps"
