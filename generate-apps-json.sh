@@ -36,7 +36,7 @@ for app_file in */ryvie-app.yml; do
 
     # Add gallery URLs dynamically
     gallery_json=$(yq -o=json '.galery' "$app_file" | jq -r --arg repo "$GITHUB_REPO" --arg branch "$BRANCH" --arg app "$app_dir" '
-      map("https://cdn.jsdelivr.net/gh/\($repo)@\($branch)/apps/\($app)/" + .)
+      map("https://cdn.jsdelivr.net/gh/\($repo)@\($branch)/\($app)/" + .)
     ')
 
     # Merge fields (replace gallery field with full URLs)
