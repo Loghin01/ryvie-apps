@@ -21,7 +21,7 @@ APPS_DIR="apps"
 OUTPUT_FILE="apps.json"
 GITHUB_REPO="Loghin01/ryvie-apps-gallery"
 BRANCH="main"
-
+ 
 echo "🧩 Generating ${OUTPUT_FILE} from ${APPS_DIR}/*/ryvie-apps.yml..."
 
 # Initialize empty JSON array
