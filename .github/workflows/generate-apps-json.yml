@@ -22,7 +22,7 @@ jobs:
           chmod +x /usr/local/bin/yq
 
       - name: Generate apps.json
-        run: bash ./generate_apps_json.sh
+        run: bash ./generate-apps-json.sh
 
       - name: Commit apps.json if changed
         run: |
