@@ -1,51 +1,34 @@
 #!/bin/bash
 # ----------------------------------------------------------
 # Script: generate_apps_json.sh
-# Description: Generate apps.json by merging metadata from each
-#              t-apps.yml and constructing image URLs from jsDelivr.
+# Description: Generate apps.json from t-apps.yml metadata,
+#              with automatic gallery URL generation.
+#              Adapted for GitHub Actions (non-interactive).
 # ----------------------------------------------------------
 
 set -e
 
 # ------------------------------
-# Check dependencies: jq & yq
+# Check dependencies (CI-friendly)
 # ------------------------------
-command -v jq >/dev/null 2>&1 || {
-  echo "❌ jq is not installed. Installing..."
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    sudo apt update && sudo apt install -y jq
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
-    brew install jq
-  else
-    echo "⚠️ Unsupported OS. Please install jq manually."
-    exit 1
-  fi
-}
+command -v jq >/dev/null 2>&1 || { echo "❌ jq is not installed. Exiting."; exit 1; }
+command -v yq >/dev/null 2>&1 || { echo "❌ yq is not installed. Exiting."; exit 1; }
 
-command -v yq >/dev/null 2>&1 || {
-  echo "❌ yq is not installed. Installing..."
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    sudo apt update && sudo apt install -y yq
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
-    brew install yq
-  else
-    echo "⚠️ Unsupported OS. Please install yq manually."
-    exit 1
-  fi
-}
-
+# ------------------------------
+# Variables principales
+# ------------------------------
 APPS_DIR="apps"
 OUTPUT_FILE="apps.json"
 GITHUB_REPO="ryvie/ryvie-apps"
 BRANCH="main"
 
-echo "🧩 Generating ${OUTPUT_FILE} from ${APPS_DIR}/*/t-apps.yml..."
+echo "🧩 Generating ${OUTPUT_FILE} from ${APPS_DIR}/*/ryvie-apps.yml..."
 
 # Initialize empty JSON array
 echo "[]" > "$OUTPUT_FILE"
 
 # Loop over all t-apps.yml files
-for app_file in ${APPS_DIR}/*/t-apps.yml; do
+for app_file in ${APPS_DIR}/*/ryvie-apps.yml; do
   if [ -f "$app_file" ]; then
     app_dir=$(basename "$(dirname "$app_file")")
 
