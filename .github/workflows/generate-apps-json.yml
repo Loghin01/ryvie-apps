@@ -8,20 +8,22 @@ on:
       - 'apps.json'
 
 permissions:
-  contents: write
+  contents: write  # Required to create tags and releases
 
 jobs:
   generate:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo avec token pour push
-      - name: Checkout repo
+      # 1️⃣ Checkout repo with full history and tags
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GH_TOKEN }}
+          fetch-depth: 0
+          fetch-tags: true
 
-      # 2️⃣ Installer dépendances
+      # 2️⃣ Install dependencies
       - name: Install dependencies
         run: |
           sudo apt update
@@ -29,14 +31,12 @@ jobs:
           wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
           chmod +x /usr/local/bin/yq
 
-      # 3️⃣ Générer apps.json
+      # 3️⃣ Generate apps.json
       - name: Generate apps.json
         run: bash ./generate-apps-json.sh
 
-      # 4️⃣ Commit et push automatique si changé
+      # 4️⃣ Commit and push apps.json if changed
       - name: Commit apps.json if changed
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github-actions"
@@ -44,7 +44,11 @@ jobs:
           git diff --cached --quiet || git commit -m "Update apps.json"
           git push origin HEAD:${{ github.ref }}
 
-      # 5️⃣ Déterminer la prochaine version
+      # 5️⃣ Debug tags to verify visibility
+      - name: List existing tags
+        run: git tag -l
+
+      # 6️⃣ Determine next version based on existing tags
       - name: Determine next version
         id: version
         run: |
@@ -56,17 +60,22 @@ jobs:
           patch=${latest##*.}
           next="${base}.$((patch + 1))"
           echo "next_version=$next" >> $GITHUB_OUTPUT
-          echo "📦 New version: $next"
+          echo "📦 Next version: $next"
 
-      # 6️⃣ Créer et pousser le tag Git
+      # 7️⃣ Create and push new tag (skip if already exists)
       - name: Create and push Git tag
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github-actions"
-          git tag ${{ steps.version.outputs.next_version }}
-          git push origin ${{ steps.version.outputs.next_version }}
+          tag=${{ steps.version.outputs.next_version }}
+          if git ls-remote --tags origin | grep -q "refs/tags/${tag}$"; then
+            echo "🔁 Tag ${tag} already exists, skipping push."
+          else
+            git tag $tag
+            git push origin $tag
+          fi
 
-      # 7️⃣ Créer la release GitHub
+      # 8️⃣ Create GitHub release with apps.json
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
